@@ -139,11 +139,13 @@ impl RootContext for FilterRoot {
         };
         match serde_json::from_slice::<PluginConfiguration>(&configuration) {
             Ok(config) => {
-                let use_tracing_exporter = config.observability.tracing.is_some();
-                crate::tracing::init_observability(
-                    use_tracing_exporter,
-                    config.observability.default_level.as_deref(),
-                );
+                // Skipped on s390x: proxy_get_log_level hostcall endianness crash in init_observability.
+                // let use_tracing_exporter = config.observability.tracing.is_some();
+                // crate::tracing::init_observability(
+                //     use_tracing_exporter,
+                //     config.observability.default_level.as_deref(),
+                // );
+                log::info!("#{} skipped init_observability", self.context_id);
 
                 info!("plugin config parsed: {:?}", config);
                 self.process_config(config)
